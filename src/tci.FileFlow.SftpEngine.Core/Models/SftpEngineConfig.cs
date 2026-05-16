@@ -24,6 +24,5 @@ public class SftpEngineConfig
     public int DeleteOlderThanDays { get; set; } = 7;
 
     // White-Label / Branding Personalization
-    public string ClientName { get; set; } = "TCI Soluciones";
-    public string ClientLogoBase64 { get; set; } = string.Empty;
+    public string ClientName { get; set; } = string.Empty;
 }
