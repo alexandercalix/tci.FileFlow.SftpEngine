@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DialogTitle" xml:space="preserve"><value>Configuración del Motor (Staging)</value></data>
+  <data name="Section1Title" xml:space="preserve"><value>1. Credenciales del Servidor SFTP</value></data>
+  <data name="HostLabel" xml:space="preserve"><value>Host / IP</value></data>
+  <data name="PortLabel" xml:space="preserve"><value>Puerto</value></data>
+  <data name="UserLabel" xml:space="preserve"><value>Usuario</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Contraseña</value></data>
+  <data name="Section2Title" xml:space="preserve"><value>2. Rutas y Frecuencia</value></data>
+  <data name="LocalPathLabel" xml:space="preserve"><value>Ruta Local (Host)</value></data>
+  <data name="RemotePathLabel" xml:space="preserve"><value>Directorio Remoto</value></data>
+  <data name="IntervalLabel" xml:space="preserve"><value>Intervalo de Ejecución (Minutos)</value></data>
+  <data name="Section3Title" xml:space="preserve"><value>3. Reglas de Limpieza y Retención</value></data>
+  <data name="DeleteLocalLabel" xml:space="preserve"><value>Eliminar archivo local tras transferir</value></data>
+  <data name="IgnoreDaysLabel" xml:space="preserve"><value>Ignorar archivos con más de (Días)</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="SaveDraftButton" xml:space="preserve"><value>Guardar Borrador</value></data>
+  <data name="StagingSavedSuccess" xml:space="preserve"><value>Borrador guardado exitosamente.</value></data>
+  <data name="FormValidationError" xml:space="preserve"><value>Por favor corrige los errores del formulario.</value></data>
+  <data name="ActiveConfigTitle" xml:space="preserve"><value>Configuración Activa</value></data>
+  <data name="DraftConfigTitle" xml:space="preserve"><value>Configuración Borrador (Staging)</value></data>
+  <data name="ApplyChangesBtn" xml:space="preserve"><value>Aplicar a Producción</value></data>
+  <data name="DeploymentSuccess" xml:space="preserve"><value>Configuración desplegada y aplicada al worker exitosamente.</value></data>
+  <data name="DeploymentFailed" xml:space="preserve"><value>Despliegue Fallido: El diagnóstico de red no ha pasado.</value></data>
+</root>

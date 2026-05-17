@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DarkMode" xml:space="preserve"><value>Dark Mode</value></data>
+  <data name="LightMode" xml:space="preserve"><value>Light Mode</value></data>
+  <data name="Language" xml:space="preserve"><value>Language</value></data>
+  <data name="English" xml:space="preserve"><value>English</value></data>
+  <data name="Spanish" xml:space="preserve"><value>Spanish</value></data>
+</root>

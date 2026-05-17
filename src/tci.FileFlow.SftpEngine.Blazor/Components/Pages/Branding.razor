@@ -1,0 +1,165 @@
+@using Microsoft.Extensions.Localization
+@using tci.FileFlow.SftpEngine.Core.Models
+@using tci.FileFlow.SftpEngine.Core.Services
+@using System.IO
+@using MudBlazor
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Processing
+@using Color = MudBlazor.Color
+
+@inject IStringLocalizer<Branding> Loc
+@inject IDatabaseService DbService
+@inject ISnackbar Snackbar
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@inject NavigationManager NavigationManager
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Brush" Class="mr-3 mb-n1" />
+            @Loc["DialogTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_form" IsValid="@_success" Class="pa-4">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["ClientNameSection"]</MudText>
+            <MudGrid Class="mb-6">
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_clientName" Label="@Loc["ClientNameLabel"]" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </MudItem>
+            </MudGrid>
+
+            <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["AssetsSection"]</MudText>
+            <MudGrid Class="mb-4">
+                <MudItem xs="12">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadClientLogoAsync" Accept=".png, .jpg, .jpeg">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" FullWidth="true">
+                                @Loc["UploadLogoButton"]
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                    @if (!string.IsNullOrEmpty(_uploadedLogoName))
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Success" Class="mt-1 d-block">@Loc["UploadedText"] @_uploadedLogoName</MudText>
+                    }
+                    <MudText Typo="Typo.caption" Color="Color.Default" Class="d-block mt-2">@Loc["LogoHint"]</MudText>
+                    
+                    <MudCheckBox @bind-Value="_generateFavicon" Label="@Loc["GenerateFaviconLabel"]" Color="Color.Primary" Class="mt-2" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@Loc["CancelButton"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="SaveBrandingAsync">@Loc["SaveButton"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private MudForm _form;
+    private bool _success;
+    
+    private string _clientName;
+    private string _uploadedLogoName = string.Empty;
+    private bool _generateFavicon = true;
+
+    protected override void OnInitialized()
+    {
+        // Branding updates instantly to active config, but we also sync to staging so it's not overwritten later.
+        var activeConfig = DbService.GetActiveConfig();
+        _clientName = activeConfig.ClientName;
+    }
+
+    private async Task UploadClientLogoAsync(IBrowserFile file)
+    {
+        try
+        {
+            if (file != null)
+            {
+                // Up to 5 MB
+                if (file.Size > 5 * 1024 * 1024)
+                {
+                    Snackbar.Add(Loc["FileTooLargeError"], Severity.Warning);
+                    return;
+                }
+
+                var imagesFolder = Path.Combine(Env.WebRootPath, "images");
+                Directory.CreateDirectory(imagesFolder);
+                var filePath = Path.Combine(imagesFolder, "client-logo.png");
+
+                // Read file into memory
+                using var ms = new MemoryStream();
+                await file.OpenReadStream(5 * 1024 * 1024).CopyToAsync(ms);
+                ms.Position = 0;
+
+                // Save as logo
+                await using (var fs = new FileStream(filePath, FileMode.Create))
+                {
+                    await ms.CopyToAsync(fs);
+                }
+
+                _uploadedLogoName = file.Name;
+                Snackbar.Add(Loc["LogoUpdatedSuccess"], Severity.Success);
+
+                if (_generateFavicon)
+                {
+                    try
+                    {
+                        ms.Position = 0;
+                        using var image = await SixLabors.ImageSharp.Image.LoadAsync(ms);
+                        image.Mutate(x => x.Resize(new SixLabors.ImageSharp.Processing.ResizeOptions
+                        {
+                            Size = new SixLabors.ImageSharp.Size(32, 32),
+                            Mode = SixLabors.ImageSharp.Processing.ResizeMode.Pad
+                        }));
+
+                        var faviconPath = Path.Combine(Env.WebRootPath, "favicon.png");
+                        await image.SaveAsync(faviconPath, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                        Snackbar.Add(Loc["FaviconGeneratedSuccess"], Severity.Success);
+                    }
+                    catch (Exception ex)
+                    {
+                        Snackbar.Add($"Error generating favicon: {ex.Message}", Severity.Warning);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["SaveError"]} {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SaveBrandingAsync()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            // Sync to both Active and Staging configs
+            var activeConfig = DbService.GetActiveConfig();
+            activeConfig.ClientName = _clientName;
+            DbService.SaveConfig(activeConfig);
+
+            var stagingConfig = DbService.GetStagingConfig();
+            stagingConfig.ClientName = _clientName;
+            DbService.SaveConfig(stagingConfig);
+
+            Snackbar.Add(Loc["SaveSuccess"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add(Loc["FormValidationError"], Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

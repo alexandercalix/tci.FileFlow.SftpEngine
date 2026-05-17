@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DialogTitle" xml:space="preserve"><value>Engine Diagnostics &amp; Deployment</value></data>
+  <data name="TestConnectionHeader" xml:space="preserve"><value>1. Validate Staging Settings</value></data>
+  <data name="TestConnectionDesc" xml:space="preserve"><value>Executes an immediate network handshake check using the current draft parameters without altering production.</value></data>
+  <data name="TestConnectionBtn" xml:space="preserve"><value>Test SFTP Connection</value></data>
+  <data name="ApplyChangesHeader" xml:space="preserve"><value>2. Deploy Configuration to Production</value></data>
+  <data name="ApplyChangesDesc" xml:space="preserve"><value>Applies the draft configuration parameters to the active 24/7 background worker execution thread.</value></data>
+  <data name="ApplyChangesBtn" xml:space="preserve"><value>Validate &amp; Apply Changes</value></data>
+  <data name="ResetHistoryHeader" xml:space="preserve"><value>3. System Maintenance Tools</value></data>
+  <data name="ResetHistoryDesc" xml:space="preserve"><value>Clears out the entire local transfer log cache database. Warning: This causes previously uploaded files to be re-transmitted.</value></data>
+  <data name="ResetHistoryBtn" xml:space="preserve"><value>Reset Transferred History Cache</value></data>
+  <data name="CloseButton" xml:space="preserve"><value>Close</value></data>
+  <data name="TestingConnectionStatus" xml:space="preserve"><value>Running network diagnostics handshake...</value></data>
+  <data name="ConnectionSuccess" xml:space="preserve"><value>SFTP Connection diagnostics successful. Remote directory verified.</value></data>
+  <data name="ConnectionFailed" xml:space="preserve"><value>Network validation failed:</value></data>
+  <data name="DeploymentSuccess" xml:space="preserve"><value>Configuration successfully deployed to active production environment.</value></data>
+  <data name="DeploymentFailed" xml:space="preserve"><value>Cannot deploy configuration. Handshake verification failed first.</value></data>
+  <data name="ResetConfirmTitle" xml:space="preserve"><value>DANGEROUS OPERATION</value></data>
+  <data name="ResetConfirmMsg" xml:space="preserve"><value>Are you absolutely sure you want to completely erase the database log history? This cannot be undone and will trigger re-transfers.</value></data>
+  <data name="ResetConfirmYes" xml:space="preserve"><value>Erase History Cache</value></data>
+  <data name="ResetConfirmNo" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ResetSuccessText" xml:space="preserve"><value>Transfer log history cache successfully dropped from database.</value></data>
+</root>

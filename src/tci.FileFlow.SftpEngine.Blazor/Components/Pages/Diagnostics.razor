@@ -1,0 +1,96 @@
+@inject IStringLocalizer<Diagnostics> Loc
+@inject IDatabaseService DbService
+@inject ISftpService SftpService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Analytics" Class="mr-3 " />
+            @Loc["DialogTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacer="Size.Large" Class="pa-4">
+
+            <MudPaper Class="pa-4" Outlined="true">
+                <MudText Typo="Typo.subtitle1" Color="Color.Primary" Class="font-weight-bold">
+                    @Loc["TestConnectionHeader"]</MudText>
+                    <MudText Typo="Typo.body2" Class="mb-3" Color="Color.Secondary">@Loc["TestConnectionDesc"]</MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.NetworkCheck" Loading="@_isTesting"
+                               OnClick="RunNetworkDiagnosticsAsync">
+                        @Loc["TestConnectionBtn"]
+                    </MudButton>
+                </MudPaper>
+
+
+                    <MudPaper Class="pa-4" Outlined="true" Style="border-color: var(--mud-palette-error);">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Error" Class="font-weight-bold">@Loc["ResetHistoryHeader"]
+                        </MudText>
+                        <MudText Typo="Typo.body2" Class="mb-3" Color="Color.Secondary">@Loc["ResetHistoryDesc"]</MudText>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                                   StartIcon="@Icons.Material.Filled.DeleteForever" OnClick="ResetTransferHistoryAsync">
+                            @Loc["ResetHistoryBtn"]
+                        </MudButton>
+                    </MudPaper>
+
+                </MudStack>
+            </DialogContent>
+            <DialogActions>
+                <MudButton OnClick="Close">@Loc["CloseButton"]</MudButton>
+            </DialogActions>
+        </MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private bool _isTesting;
+
+    private async Task RunNetworkDiagnosticsAsync()
+    {
+        _isTesting = true;
+        Snackbar.Add(Loc["TestingConnectionStatus"], Severity.Info);
+
+        // Fetch active config to diagnose the running engine
+        var activeConfig = DbService.GetActiveConfig();
+
+        // Run the handshake out of process thread to keep UI completely responsive
+        var result = await Task.Run(() => SftpService.TestConnection(activeConfig));
+        _isTesting = false;
+
+        if (result.Success)
+        {
+            Snackbar.Add(Loc["ConnectionSuccess"], Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add($"{Loc["ConnectionFailed"]} {result.ErrorMessage}", Severity.Error);
+        }
+    }
+
+
+    private async Task ResetTransferHistoryAsync()
+    {
+        // Leverage modern asynchronous message box architecture
+        bool? result = await DialogService.ShowMessageBoxAsync(
+            Loc["ResetConfirmTitle"],
+            (MarkupString)Loc["ResetConfirmMsg"].Value,
+            yesText: Loc["ResetConfirmYes"].Value,
+            cancelText: Loc["ResetConfirmNo"].Value);
+
+        if (result == true)
+        {
+            DbService.ResetProcessedLogs();
+            Snackbar.Add(Loc["ResetSuccessText"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+
+    private void Close()
+    {
+        MudDialog.Cancel();
+    }
+}

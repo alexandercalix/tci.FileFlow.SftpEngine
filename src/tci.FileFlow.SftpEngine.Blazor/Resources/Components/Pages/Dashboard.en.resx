@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Title" xml:space="preserve"><value>SFTP Engine Dashboard</value></data>
+  <data name="ConfigButton" xml:space="preserve"><value>Config</value></data>
+  <data name="DiagnosticsButton" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="ExecuteNow" xml:space="preserve"><value>Execute Now</value></data>
+  <data name="WorkerStatus" xml:space="preserve"><value>Worker Status</value></data>
+  <data name="ConnectionStatus" xml:space="preserve"><value>Connection Status</value></data>
+  <data name="NextRun" xml:space="preserve"><value>Next Run</value></data>
+  <data name="NextPurge" xml:space="preserve"><value>Next Purge</value></data>
+  <data name="RecentLogs" xml:space="preserve"><value>Recent Logs</value></data>
+  <data name="Date" xml:space="preserve"><value>Date</value></data>
+  <data name="FileName" xml:space="preserve"><value>File Name</value></data>
+  <data name="Size" xml:space="preserve"><value>Size</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Diagnostics" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="LiveBatchProcessing" xml:space="preserve"><value>Live Batch Processing</value></data>
+  <data name="ProcessedCount" xml:space="preserve"><value>Processed:</value></data>
+  <data name="IntervalCountdown" xml:space="preserve"><value>Interval countdown</value></data>
+  <data name="TimeRemaining" xml:space="preserve"><value>remaining</value></data>
+  <data name="FilterByName" xml:space="preserve"><value>Filter by File Name</value></data>
+  <data name="FilterByStatus" xml:space="preserve"><value>Filter by Status</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>All Statuses</value></data>
+  <data name="StatusTransferred" xml:space="preserve"><value>Transferred</value></data>
+  <data name="StatusConnectionError" xml:space="preserve"><value>Connection Error</value></data>
+  <data name="StatusTransferError" xml:space="preserve"><value>Transfer Error</value></data>
+  <data name="StatusIgnoredEmpty" xml:space="preserve"><value>Ignored (Empty)</value></data>
+  <data name="StatusIgnoredByAge" xml:space="preserve"><value>Ignored (Age)</value></data>
+  <data name="DateFrom" xml:space="preserve"><value>Date From</value></data>
+  <data name="DateTo" xml:space="preserve"><value>Date To</value></data>
+  <data name="ResetFilters" xml:space="preserve"><value>Reset Filters</value></data>
+  <data name="Search" xml:space="preserve"><value>Search</value></data>
+  <data name="NoLogsFound" xml:space="preserve"><value>No logs found matching your filters.</value></data>
+  <data name="PaginationInfo" xml:space="preserve"><value>Page</value></data>
+  <data name="PageSize" xml:space="preserve"><value>Page Size</value></data>
+  <data name="Previous" xml:space="preserve"><value>Previous</value></data>
+  <data name="Next" xml:space="preserve"><value>Next</value></data>
+</root>

@@ -128,6 +128,9 @@ public class FileFlowWorker : BackgroundService
             return;
         }
 
+        // Connection is healthy, clear previous errors from the UI dashboard
+        _progressState.LastSystemError = null;
+
         // 4. Memory-Safe Scanning using EnumerateFiles
         _progressState.CurrentTaskName = "SCANNING_DIRECTORY";
 
@@ -176,6 +179,8 @@ public class FileFlowWorker : BackgroundService
         _progressState.CurrentTaskName = "TRANSFERRING_BATCHES";
         _logger.LogInformation("Found {Count} new files. Beginning batch processing loops.", _progressState.TotalFilesToProcess);
 
+        int consecutiveErrors = 0;
+
         // 5. Stream Processing by Lots (Batching)
         for (int i = 0; i < _progressState.TotalFilesToProcess; i += BatchSize)
         {
@@ -213,9 +218,11 @@ public class FileFlowWorker : BackgroundService
                     }
 
                     _progressState.FilesSuccessfullyProcessed++;
+                    consecutiveErrors = 0; // Reset counter on success
                 }
                 catch (Exception ex)
                 {
+                    consecutiveErrors++;
                     _logger.LogError(ex, "Failed to transfer file: {FileName}", file.Name);
                     _progressState.LastSystemError = $"File upload error on {file.Name}: {ex.Message}";
 
@@ -230,10 +237,12 @@ public class FileFlowWorker : BackgroundService
                     });
 
                     // Stop the current batch sequence immediately if connection breaks down mid-flight
+                    // or if we encounter persistent/critical errors (like Permission denied)
                     var networkCheck = _sftpService.TestConnection(config);
-                    if (!networkCheck.Success)
+                    if (!networkCheck.Success || consecutiveErrors >= 3 || ex.Message.IndexOf("Permission denied", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         _progressState.IsSftpConnectionOk = false;
+                        _logger.LogWarning("Aborting transfer cycle due to critical or persistent errors.");
                         return;
                     }
                 }

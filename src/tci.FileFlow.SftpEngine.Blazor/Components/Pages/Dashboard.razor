@@ -1,0 +1,335 @@
+@page "/"
+@using Microsoft.Extensions.Hosting
+@using Microsoft.Extensions.Localization
+@using tci.FileFlow.SftpEngine.Core.Models
+@using tci.FileFlow.SftpEngine.Core.Services
+@using tci.FileFlow.SftpEngine.Core.BackgroundServices
+@using MudBlazor
+
+@inject IStringLocalizer<Dashboard> Loc
+@inject TransferProgressState ProgressState
+@inject IDatabaseService DbService
+@inject IEnumerable<IHostedService> HostedServices
+@inject IDialogService DialogService
+@implements IDisposable
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <MudText Typo="Typo.h4" Color="Color.Primary">@Loc["Title"]</MudText>
+    <div class="d-flex gap-4">
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Settings"
+                   OnClick="OpenConfigDialogAsync">
+            @Loc["ConfigButton"]
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Info" StartIcon="@Icons.Material.Filled.Analytics"
+                   OnClick="OpenDiagnosticsDialogAsync">
+            @Loc["DiagnosticsButton"]
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Bolt"
+                   OnClick="ForceExecutionAsync">
+            @Loc["ExecuteNow"]
+        </MudButton>
+    </div>
+</div>
+
+@if (!ProgressState.IsSftpConnectionOk || !string.IsNullOrEmpty(ProgressState.LastSystemError))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-6" ShowCloseIcon="false">
+        <strong>SFTP Engine Alert:</strong> @(string.IsNullOrEmpty(ProgressState.LastSystemError) ? "SFTP Destination Server is unreachable." : ProgressState.LastSystemError)
+        <br />
+        <MudText Typo="Typo.caption">Validated at: @ProgressState.LastStatusUpdate.ToLocalTime().ToString("HH:mm:ss")
+        </MudText>
+    </MudAlert>
+}
+
+<MudGrid Class="mb-6">
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="text-uppercase">@Loc["WorkerStatus"]
+                </MudText>
+                <MudText Typo="Typo.h5" Color="@(ProgressState.IsWorkerRunning ? Color.Success : Color.Error)">
+                    @(ProgressState.IsWorkerRunning ? "ONLINE" : "OFFLINE")
+                </MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Task: @ProgressState.CurrentTaskName</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="text-uppercase">@Loc["ConnectionStatus"]
+                </MudText>
+                <MudText Typo="Typo.h5" Color="@(ProgressState.IsSftpConnectionOk ? Color.Success : Color.Error)">
+                    @(ProgressState.IsSftpConnectionOk ? "CONNECTED" : "DISCONNECTED")
+                </MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Updated:
+                    @ProgressState.LastStatusUpdate.ToString("HH:mm:ss")</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="text-uppercase">@Loc["NextRun"]</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Info" Style="font-family: monospace;">
+                        @ProgressState.TimeUntilNextRun.ToString(@"mm\:ss")
+                    </MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc["IntervalCountdown"]</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <MudText Typo="Typo.subtitle2" Color="Color.Default" Class="text-uppercase">@Loc["NextPurge"]</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Info">
+                        @((int)ProgressState.TimeUntilNextDatabasePurge.TotalDays) Days
+                    </MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        @Loc["TimeRemaining"] @ProgressState.TimeUntilNextDatabasePurge.ToString(@"hh\:mm\:ss")</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        @if (ProgressState.CurrentTaskName != "IDLE")
+        {
+            <MudPaper Class="pa-4 mb-6" Elevation="2">
+                <MudText Typo="Typo.h6" Class="mb-2">@Loc["LiveBatchProcessing"]</MudText>
+                <MudProgressLinear Color="Color.Success" Value="@ProgressState.CurrentBatchPercentage" Size="Size.Large"
+                                   Class="mb-2" />
+                <MudText Typo="Typo.body2">@Loc["ProcessedCount"] @ProgressState.FilesSuccessfullyProcessed /
+                    @ProgressState.TotalFilesToProcess
+                </MudText>
+            </MudPaper>
+        }
+
+        <MudText Typo="Typo.h6" Class="mb-3">@Loc["RecentLogs"]</MudText>
+
+        <!-- Filter Section -->
+        <MudPaper Class="pa-4 mb-4" Elevation="1">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudTextField @bind-Value="_filterModel.FileNameFilter" Label="@Loc["FilterByName"]"
+                                  Variant="Variant.Outlined" Margin="Margin.Dense" ClearButton="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudSelect T="TransferStatus?" Value="_filterModel.StatusFilter" Label="@Loc["FilterByStatus"]" Variant="Variant.Outlined"
+                               Margin="Margin.Dense" ClearButton="true" ValueChanged="@(async (TransferStatus? val) => { _filterModel.StatusFilter = val; await ApplyFiltersAsync(); })">
+                        <MudSelectItem Value="@((TransferStatus?)null)">@Loc["AllStatuses"]</MudSelectItem>
+                        <MudSelectItem Value="@((TransferStatus?)TransferStatus.Transferred)">@Loc["StatusTransferred"]</MudSelectItem>
+                        <MudSelectItem Value="@((TransferStatus?)TransferStatus.ConnectionError)">@Loc["StatusConnectionError"]</MudSelectItem>
+                        <MudSelectItem Value="@((TransferStatus?)TransferStatus.TransferError)">@Loc["StatusTransferError"]</MudSelectItem>
+                        <MudSelectItem Value="@((TransferStatus?)TransferStatus.IgnoredEmpty)">@Loc["StatusIgnoredEmpty"]</MudSelectItem>
+                        <MudSelectItem Value="@((TransferStatus?)TransferStatus.IgnoredByAge)">@Loc["StatusIgnoredByAge"]</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudDatePicker Date="_filterModel.DateFromFilter" Label="@Loc["DateFrom"]" Variant="Variant.Outlined"
+                                   Margin="Margin.Dense" Format="yyyy-MM-dd" DateChanged="@(async (DateTime? val) => { _filterModel.DateFromFilter = val; await ApplyFiltersAsync(); })" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudDatePicker Date="_filterModel.DateToFilter" Label="@Loc["DateTo"]" Variant="Variant.Outlined"
+                                   Margin="Margin.Dense" Format="yyyy-MM-dd" DateChanged="@(async (DateTime? val) => { _filterModel.DateToFilter = val; await ApplyFiltersAsync(); })" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2" Class="d-flex align-center gap-2">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="ApplyFiltersAsync"
+                               Class="flex-grow-1">
+                        @Loc["Search"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small" OnClick="ResetFiltersAsync">
+                        @Loc["ResetFilters"]
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <!-- Table -->
+        <MudTable Items="@_logPage?.Items" Hover="true" Dense="true" Elevation="2" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>@Loc["Date"]</MudTh>
+                <MudTh>@Loc["FileName"]</MudTh>
+                <MudTh>Size (Bytes)</MudTh>
+                <MudTh>@Loc["Status"]</MudTh>
+                <MudTh>Diagnostics</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel='@Loc["Date"]'>@context.ProcessedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                <MudTd DataLabel='@Loc["FileName"]'><strong>@context.FileName</strong></MudTd>
+                <MudTd DataLabel='@Loc["Size"]'>@context.FileSizeInBytes</MudTd>
+                <MudTd DataLabel='@Loc["Status"]'>
+                    <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small" Variant="Variant.Filled"
+                             Value="@context.Status.ToString()">
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel='@Loc["Diagnostics"]'>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.DiagnosticsMessage</MudText>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Align="Align.Center" Class="pa-4">@Loc["NoLogsFound"]</MudText>
+            </NoRecordsContent>
+        </MudTable>
+
+        <!-- Pagination Controls -->
+        @if (_logPage != null && _logPage.TotalPages > 1)
+        {
+            <MudPaper Class="pa-4 mt-4" Elevation="1">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body2">
+                        @Loc["PaginationInfo"] @_logPage.PageNumber / @_logPage.TotalPages (Total: @_logPage.TotalCount)
+                    </MudText>
+                    <MudStack Row="true" Spacing="2">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
+                                   Disabled="@(!_logPage.HasPreviousPage)" OnClick="@GoToPreviousPageAsync">
+                            @Loc["Previous"]
+                        </MudButton>
+                        <MudSelect @bind-Value="_filterModel.PageSize" Label="@Loc["PageSize"]" Variant="Variant.Outlined"
+                                   Margin="Margin.Dense" Style="width: 100px;">
+                            <MudSelectItem Value="10">10</MudSelectItem>
+                            <MudSelectItem Value="25">25</MudSelectItem>
+                            <MudSelectItem Value="50">50</MudSelectItem>
+                            <MudSelectItem Value="100">100</MudSelectItem>
+                        </MudSelect>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Default" Size="Size.Small"
+                                   Disabled="@(!_logPage.HasNextPage)" OnClick="@GoToNextPageAsync">
+                            @Loc["Next"]
+                        </MudButton>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        }
+
+@code {
+    private PeriodicTimer? _timer;
+    private TransferLogFilter _filterModel = new TransferLogFilter { PageSize = 25 };
+    private TransferLogPage? _logPage;
+    private int _tickCounter = 0;
+    private bool _autoRefreshEnabled = true;
+
+    protected override void OnInitialized()
+    {
+        ApplyFiltersAsync().GetAwaiter().GetResult();
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        _ = RunTimerLoopAsync();
+    }
+
+    private async Task RunTimerLoopAsync()
+    {
+        while (await _timer!.WaitForNextTickAsync())
+        {
+            _tickCounter++;
+            if (_tickCounter >= 5 && _autoRefreshEnabled)
+            {
+                await ApplyFiltersAsync();
+                _tickCounter = 0;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task ApplyFiltersAsync()
+    {
+        _filterModel.PageNumber = 1; // Reset to first page when filters change
+        _logPage = DbService.GetFilteredLogs(_filterModel);
+        await Task.CompletedTask;
+    }
+
+    private async Task ApplyFiltersAsync(TransferStatus? status)
+    {
+        _filterModel.StatusFilter = status;
+        await ApplyFiltersAsync();
+    }
+
+    private async Task ApplyFiltersAsync(DateTime? date)
+    {
+        _filterModel.PageNumber = 1;
+        _logPage = DbService.GetFilteredLogs(_filterModel);
+        await Task.CompletedTask;
+    }
+
+    private async Task ResetFiltersAsync()
+    {
+        _filterModel = new TransferLogFilter { PageSize = 25 };
+        await ApplyFiltersAsync();
+    }
+
+    private async Task GoToNextPageAsync()
+    {
+        if (_logPage?.HasNextPage == true)
+        {
+            _filterModel.PageNumber++;
+            _autoRefreshEnabled = false;
+            _logPage = DbService.GetFilteredLogs(_filterModel);
+            _autoRefreshEnabled = true;
+            await Task.CompletedTask;
+        }
+    }
+
+    private async Task GoToPreviousPageAsync()
+    {
+        if (_logPage?.HasPreviousPage == true)
+        {
+            _filterModel.PageNumber--;
+            _autoRefreshEnabled = false;
+            _logPage = DbService.GetFilteredLogs(_filterModel);
+            _autoRefreshEnabled = true;
+            await Task.CompletedTask;
+        }
+    }
+
+    private async Task ForceExecutionAsync()
+    {
+
+        var parameters = new DialogParameters<ConfirmationModal>
+        {
+            { x => x.Title, "Force Immediate Execution" },
+            { x => x.Message, "Are you sure you want to bypass the timer and trigger the SFTP transfer cycle immediately?" },
+            { x => x.ButtonText, "Confirm" },
+            { x => x.Color, Color.Error }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<ConfirmationModal>("", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+
+        {
+            var worker = HostedServices.OfType<FileFlowWorker>().FirstOrDefault();
+            worker?.ForceExecutionNow();
+        }
+
+    }
+
+    private async Task OpenConfigDialogAsync()
+    {
+        // This is how we hook up the Configuracion.razor MudDialog we just built!
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
+        await DialogService.ShowAsync<Configuration>("", options);
+    }
+
+    private async Task OpenDiagnosticsDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        await DialogService.ShowAsync<Diagnostics>("", options);
+    }
+
+    private Color GetStatusColor(TransferStatus status) => status switch
+    {
+        TransferStatus.Transferred => Color.Success,
+        TransferStatus.IgnoredEmpty => Color.Dark,
+        TransferStatus.IgnoredByAge => Color.Dark,
+        TransferStatus.ConnectionError => Color.Error,
+        TransferStatus.TransferError => Color.Error,
+        _ => Color.Default
+    };
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

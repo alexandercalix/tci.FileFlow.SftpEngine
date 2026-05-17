@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Title" xml:space="preserve"><value>Panel de Control SFTP</value></data>
+  <data name="ConfigButton" xml:space="preserve"><value>Configuración</value></data>
+  <data name="DiagnosticsButton" xml:space="preserve"><value>Diagnósticos</value></data>
+  <data name="ExecuteNow" xml:space="preserve"><value>Ejecutar Ahora</value></data>
+  <data name="WorkerStatus" xml:space="preserve"><value>Estado del Worker</value></data>
+  <data name="ConnectionStatus" xml:space="preserve"><value>Estado de Conexión</value></data>
+  <data name="NextRun" xml:space="preserve"><value>Próxima Ejecución</value></data>
+  <data name="NextPurge" xml:space="preserve"><value>Próxima Purga</value></data>
+  <data name="RecentLogs" xml:space="preserve"><value>Registros Recientes</value></data>
+  <data name="Date" xml:space="preserve"><value>Fecha</value></data>
+  <data name="FileName" xml:space="preserve"><value>Nombre de Archivo</value></data>
+  <data name="Size" xml:space="preserve"><value>Tamaño</value></data>
+  <data name="Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="Diagnostics" xml:space="preserve"><value>Diagnósticos</value></data>
+  <data name="LiveBatchProcessing" xml:space="preserve"><value>Procesamiento por Lote en Vivo</value></data>
+  <data name="ProcessedCount" xml:space="preserve"><value>Procesados:</value></data>
+  <data name="IntervalCountdown" xml:space="preserve"><value>Cronómetro de intervalo</value></data>
+  <data name="TimeRemaining" xml:space="preserve"><value>restantes</value></data>
+  <data name="FilterByName" xml:space="preserve"><value>Filtrar por Nombre de Archivo</value></data>
+  <data name="FilterByStatus" xml:space="preserve"><value>Filtrar por Estado</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>Todos los Estados</value></data>
+  <data name="StatusTransferred" xml:space="preserve"><value>Transferido</value></data>
+  <data name="StatusConnectionError" xml:space="preserve"><value>Error de Conexión</value></data>
+  <data name="StatusTransferError" xml:space="preserve"><value>Error de Transferencia</value></data>
+  <data name="StatusIgnoredEmpty" xml:space="preserve"><value>Ignorado (Vacío)</value></data>
+  <data name="StatusIgnoredByAge" xml:space="preserve"><value>Ignorado (Antigüedad)</value></data>
+  <data name="DateFrom" xml:space="preserve"><value>Fecha Desde</value></data>
+  <data name="DateTo" xml:space="preserve"><value>Fecha Hasta</value></data>
+  <data name="ResetFilters" xml:space="preserve"><value>Limpiar Filtros</value></data>
+  <data name="Search" xml:space="preserve"><value>Buscar</value></data>
+  <data name="NoLogsFound" xml:space="preserve"><value>No se encontraron registros que coincidan con sus filtros.</value></data>
+  <data name="PaginationInfo" xml:space="preserve"><value>Página</value></data>
+  <data name="PageSize" xml:space="preserve"><value>Elementos por Página</value></data>
+  <data name="Previous" xml:space="preserve"><value>Anterior</value></data>
+  <data name="Next" xml:space="preserve"><value>Siguiente</value></data>
+</root>

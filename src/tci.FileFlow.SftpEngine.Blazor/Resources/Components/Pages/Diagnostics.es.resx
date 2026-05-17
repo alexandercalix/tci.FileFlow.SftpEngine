@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DialogTitle" xml:space="preserve"><value>Diagnósticos y Despliegue del Motor</value></data>
+  <data name="TestConnectionHeader" xml:space="preserve"><value>1. Validar Parámetros de Staging</value></data>
+  <data name="TestConnectionDesc" xml:space="preserve"><value>Ejecuta una prueba de conexión inmediata con los datos en borrador sin alterar la producción actual.</value></data>
+  <data name="TestConnectionBtn" xml:space="preserve"><value>Probar Conexión SFTP</value></data>
+  <data name="ApplyChangesHeader" xml:space="preserve"><value>2. Desplegar Configuración a Producción</value></data>
+  <data name="ApplyChangesDesc" xml:space="preserve"><value>Aplica los parámetros del borrador al hilo activo de producción en segundo plano.</value></data>
+  <data name="ApplyChangesBtn" xml:space="preserve"><value>Validar y Aplicar Cambios</value></data>
+  <data name="ResetHistoryHeader" xml:space="preserve"><value>3. Herramientas de Mantenimiento</value></data>
+  <data name="ResetHistoryDesc" xml:space="preserve"><value>Limpia por completo el historial de logs locales. Advertencia: Esto provocará que los archivos ya subidos se vuelvan a transferir.</value></data>
+  <data name="ResetHistoryBtn" xml:space="preserve"><value>Resetear Historial de Transferencias</value></data>
+  <data name="CloseButton" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="TestingConnectionStatus" xml:space="preserve"><value>Ejecutando diagnóstico de red...</value></data>
+  <data name="ConnectionSuccess" xml:space="preserve"><value>Prueba de conexión SFTP exitosa. Directorio remoto verificado.</value></data>
+  <data name="ConnectionFailed" xml:space="preserve"><value>La validación de red falló:</value></data>
+  <data name="DeploymentSuccess" xml:space="preserve"><value>Configuración desplegada con éxito al entorno de producción activo.</value></data>
+  <data name="DeploymentFailed" xml:space="preserve"><value>No se puede aplicar. Primero debe pasar la prueba de conexión exitosamente.</value></data>
+  <data name="ResetConfirmTitle" xml:space="preserve"><value>OPERACIÓN PELIGROSA</value></data>
+  <data name="ResetConfirmMsg" xml:space="preserve"><value>¿Está completamente seguro de borrar todo el historial de logs? Esta acción no se puede deshacer y duplicará transferencias.</value></data>
+  <data name="ResetConfirmYes" xml:space="preserve"><value>Borrar Historial Cache</value></data>
+  <data name="ResetConfirmNo" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="ResetSuccessText" xml:space="preserve"><value>El historial cache de transferencias fue eliminado con éxito de la base de datos.</value></data>
+</root>

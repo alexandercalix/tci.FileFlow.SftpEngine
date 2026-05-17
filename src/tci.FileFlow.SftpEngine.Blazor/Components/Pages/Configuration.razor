@@ -1,0 +1,198 @@
+@using Microsoft.Extensions.Localization
+@using tci.FileFlow.SftpEngine.Core.Models
+@using tci.FileFlow.SftpEngine.Core.Services
+@using System.IO
+@using MudBlazor
+
+@inject IStringLocalizer<Configuration> Loc
+@inject IDatabaseService DbService
+@inject ISftpService SftpService
+@inject ISnackbar Snackbar
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Settings" Class="mr-3 mb-n1" />
+            @Loc["DialogTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <!-- Active Configuration Column -->
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.h6" Class="mb-4" Color="Color.Primary">@Loc["ActiveConfigTitle"]</MudText>
+                <MudPaper Class="pa-4" Outlined="true" Elevation="0" Style="background-color: var(--mud-palette-background-grey);">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section1Title"]</MudText>
+                    <MudGrid Class="mb-4">
+                        <MudItem xs="12" sm="8">
+                            <MudTextField @bind-Value="_activeConfig.Host" Label="@Loc["HostLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" sm="4">
+                            <MudNumericField @bind-Value="_activeConfig.Port" Label="@Loc["PortLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_activeConfig.Username" Label="@Loc["UserLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_dummyPassword" Label="@Loc["PasswordLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section2Title"]</MudText>
+                    <MudGrid Class="mb-4">
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_activeConfig.LocalSourceFolder" Label="@Loc["LocalPathLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_activeConfig.RemoteFolder" Label="@Loc["RemotePathLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudNumericField @bind-Value="_activeConfig.IntervalMinutes" Label="@Loc["IntervalLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section3Title"]</MudText>
+                    <MudGrid Class="mb-4">
+                        <MudItem xs="12" sm="6">
+                            <MudSwitch @bind-Value="_activeConfig.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudNumericField @bind-Value="_activeConfig.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Draft Configuration Column -->
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.h6" Class="mb-4" Color="Color.Secondary">@Loc["DraftConfigTitle"]</MudText>
+                <MudPaper Class="pa-4" Outlined="true" Elevation="0">
+                    <MudForm @ref="_form" IsValid="@_success">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section1Title"]</MudText>
+                        <MudGrid Class="mb-4">
+                            <MudItem xs="12" sm="8">
+                                <MudTextField @bind-Value="_config.Host" Label="@Loc["HostLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudNumericField @bind-Value="_config.Port" Label="@Loc["PortLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_config.Username" Label="@Loc["UserLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_config.Password" Label="@Loc["PasswordLabel"]" InputType="InputType.Password" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section2Title"]</MudText>
+                        <MudGrid Class="mb-4">
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_config.LocalSourceFolder" Label="@Loc["LocalPathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_config.RemoteFolder" Label="@Loc["RemotePathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudNumericField @bind-Value="_config.IntervalMinutes" Label="@Loc["IntervalLabel"]" Required="true" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section3Title"]</MudText>
+                        <MudGrid Class="mb-4">
+                            <MudItem xs="12" sm="6">
+                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="_config.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@Loc["CancelButton"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="SaveStagingAsync">@Loc["SaveDraftButton"]</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Publish" OnClick="DeployStagingToActiveAsync">@Loc["ApplyChangesBtn"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private MudForm _form;
+    private bool _success;
+    private SftpEngineConfig _config = new();
+    private SftpEngineConfig _activeConfig = new();
+    private string _dummyPassword = "********";
+
+    protected override void OnInitialized()
+    {
+        _config = DbService.GetStagingConfig();
+        _activeConfig = DbService.GetActiveConfig();
+    }
+
+    private async Task SaveStagingAsync()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            _config.IsActive = false;
+            DbService.SaveConfig(_config);
+
+            Snackbar.Add(Loc["StagingSavedSuccess"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add(Loc["FormValidationError"], Severity.Error);
+        }
+    }
+
+    private async Task DeployStagingToActiveAsync()
+    {
+        await _form.Validate();
+        if (!_form.IsValid)
+        {
+            Snackbar.Add(Loc["FormValidationError"], Severity.Error);
+            return;
+        }
+
+        // Validate local folder exists before applying
+        if (!System.IO.Directory.Exists(_config.LocalSourceFolder))
+        {
+            Snackbar.Add($"Local Directory Error: The folder '{_config.LocalSourceFolder}' does not exist on this machine.", Severity.Warning);
+            return;
+        }
+
+        // Auto-save draft before deploying
+        _config.IsActive = false;
+        DbService.SaveConfig(_config);
+
+        var stagingConfig = DbService.GetStagingConfig();
+
+        // Safety constraint: Validate connection parameters match successfully before committing to worker
+        var result = await Task.Run(() => SftpService.TestConnection(stagingConfig));
+
+        if (result.Success)
+        {
+            DbService.ApplyStagingConfig();
+            Snackbar.Add(Loc["DeploymentSuccess"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            // Show the EXACT error returned by the SFTP client
+            Snackbar.Add($"{Loc["DeploymentFailed"]} Detalle: {result.ErrorMessage}", Severity.Warning);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

@@ -100,6 +100,56 @@ public class DatabaseService : IDatabaseService
             .ToList();
     }
 
+    public TransferLogPage GetFilteredLogs(TransferLogFilter filter)
+    {
+        using var db = new LiteDatabase(_connectionString);
+        var col = db.GetCollection<TransferLog>(LogCollection);
+
+        var query = col.Query();
+
+        // Apply filters
+        if (!string.IsNullOrWhiteSpace(filter.FileNameFilter))
+        {
+            var searchTerm = filter.FileNameFilter.ToLower();
+            query = query.Where(x => x.FileName.ToLower().Contains(searchTerm));
+        }
+
+        if (filter.StatusFilter.HasValue)
+        {
+            query = query.Where(x => x.Status == filter.StatusFilter.Value);
+        }
+
+        if (filter.DateFromFilter.HasValue)
+        {
+            query = query.Where(x => x.ProcessedAt >= filter.DateFromFilter.Value);
+        }
+
+        if (filter.DateToFilter.HasValue)
+        {
+            var endOfDay = filter.DateToFilter.Value.AddDays(1).AddTicks(-1);
+            query = query.Where(x => x.ProcessedAt <= endOfDay);
+        }
+
+        // Get total count before pagination
+        var totalCount = query.Count();
+
+        // Apply pagination
+        var skip = (filter.PageNumber - 1) * filter.PageSize;
+        var items = query
+            .OrderByDescending(x => x.ProcessedAt)
+            .Skip(skip)
+            .Limit(filter.PageSize)
+            .ToList();
+
+        return new TransferLogPage
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize
+        };
+    }
+
     public int PurgeOldLogs(int daysOld = 30)
     {
         using var db = new LiteDatabase(_connectionString);

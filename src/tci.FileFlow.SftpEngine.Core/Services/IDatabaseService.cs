@@ -14,6 +14,7 @@ public interface IDatabaseService
     bool IsFileAlreadyProcessed(string fileName);
     void LogTransfer(TransferLog log);
     IEnumerable<TransferLog> GetRecentLogs(int limit = 100);
+    TransferLogPage GetFilteredLogs(TransferLogFilter filter);
 
     // Database Hygiene
     int PurgeOldLogs(int daysOld = 30);

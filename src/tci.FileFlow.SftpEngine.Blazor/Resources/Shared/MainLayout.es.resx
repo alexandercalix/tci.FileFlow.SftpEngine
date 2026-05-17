@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DarkMode" xml:space="preserve"><value>Modo Oscuro</value></data>
+  <data name="LightMode" xml:space="preserve"><value>Modo Claro</value></data>
+  <data name="Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="English" xml:space="preserve"><value>Inglés</value></data>
+  <data name="Spanish" xml:space="preserve"><value>Español</value></data>
+  <data name="Branding" xml:space="preserve"><value>Personalización</value></data>
+</root>

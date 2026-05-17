@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DialogTitle" xml:space="preserve"><value>Client Personalization (Branding)</value></data>
+  <data name="ClientNameSection" xml:space="preserve"><value>1. Company Info</value></data>
+  <data name="ClientNameLabel" xml:space="preserve"><value>Client / Company Name</value></data>
+  <data name="AssetsSection" xml:space="preserve"><value>2. Visual Assets</value></data>
+  <data name="UploadLogoButton" xml:space="preserve"><value>Upload Main Logo</value></data>
+  <data name="GenerateFaviconLabel" xml:space="preserve"><value>Auto-generate browser tab icon (favicon)</value></data>
+  <data name="UploadedText" xml:space="preserve"><value>Uploaded:</value></data>
+  <data name="LogoHint" xml:space="preserve"><value>Replaces the main logo on the dashboard. Max 5MB (.png, .jpg)</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancel</value></data>
+  <data name="SaveButton" xml:space="preserve"><value>Save Branding</value></data>
+  <data name="FileTooLargeError" xml:space="preserve"><value>The file is too large.</value></data>
+  <data name="LogoUpdatedSuccess" xml:space="preserve"><value>Logo uploaded successfully.</value></data>
+  <data name="FaviconGeneratedSuccess" xml:space="preserve"><value>Favicon generated successfully. (Hard refresh may be required to see changes)</value></data>
+  <data name="SaveSuccess" xml:space="preserve"><value>Branding settings applied successfully.</value></data>
+  <data name="SaveError" xml:space="preserve"><value>Error uploading file:</value></data>
+  <data name="FormValidationError" xml:space="preserve"><value>Please correct the errors before saving.</value></data>
+</root>

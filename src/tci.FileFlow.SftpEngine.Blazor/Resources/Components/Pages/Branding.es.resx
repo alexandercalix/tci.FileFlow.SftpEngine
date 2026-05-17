@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DialogTitle" xml:space="preserve"><value>Personalización (Branding)</value></data>
+  <data name="ClientNameSection" xml:space="preserve"><value>1. Información de la Empresa</value></data>
+  <data name="ClientNameLabel" xml:space="preserve"><value>Nombre del Cliente / Empresa</value></data>
+  <data name="AssetsSection" xml:space="preserve"><value>2. Recursos Visuales</value></data>
+  <data name="UploadLogoButton" xml:space="preserve"><value>Subir Logo Principal</value></data>
+  <data name="GenerateFaviconLabel" xml:space="preserve"><value>Generar ícono para la pestaña del navegador (favicon)</value></data>
+  <data name="UploadedText" xml:space="preserve"><value>Cargado:</value></data>
+  <data name="LogoHint" xml:space="preserve"><value>Reemplaza el logo en el panel principal. Máx 5MB (.png, .jpg)</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="SaveButton" xml:space="preserve"><value>Guardar Personalización</value></data>
+  <data name="FileTooLargeError" xml:space="preserve"><value>El archivo es demasiado grande.</value></data>
+  <data name="LogoUpdatedSuccess" xml:space="preserve"><value>Logo cargado exitosamente.</value></data>
+  <data name="FaviconGeneratedSuccess" xml:space="preserve"><value>Icono generado exitosamente. (Puede que necesites forzar recarga (Ctrl+F5) para ver el cambio)</value></data>
+  <data name="SaveSuccess" xml:space="preserve"><value>Personalización aplicada con éxito.</value></data>
+  <data name="SaveError" xml:space="preserve"><value>Error al cargar el archivo:</value></data>
+  <data name="FormValidationError" xml:space="preserve"><value>Por favor corrige los errores antes de guardar.</value></data>
+</root>

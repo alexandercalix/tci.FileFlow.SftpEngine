@@ -9,11 +9,16 @@ public class SftpService : ISftpService
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(config.Host)) return (false, "Host no puede estar vacío.");
+            if (string.IsNullOrWhiteSpace(config.Username)) return (false, "Usuario no puede estar vacío.");
+            
+            var password = config.Password ?? string.Empty;
+
             var connectionInfo = new ConnectionInfo(
                 config.Host,
                 config.Port,
                 config.Username,
-                new PasswordAuthenticationMethod(config.Username, config.Password)
+                new PasswordAuthenticationMethod(config.Username, password)
             )
             {
                 Timeout = TimeSpan.FromSeconds(10) // Fast timeout for immediate UI feedback
@@ -44,11 +49,13 @@ public class SftpService : ISftpService
             throw new FileNotFoundException("The local source file was not found.", localFilePath);
         }
 
+        var password = config.Password ?? string.Empty;
+
         var connectionInfo = new ConnectionInfo(
             config.Host,
             config.Port,
             config.Username,
-            new PasswordAuthenticationMethod(config.Username, config.Password)
+            new PasswordAuthenticationMethod(config.Username, password)
         )
         {
             Timeout = TimeSpan.FromSeconds(30)

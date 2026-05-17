@@ -1,19 +1,144 @@
-﻿@inherits LayoutComponentBase
+@using System.Globalization
+@using Blazored.LocalStorage
+@using Microsoft.Extensions.Localization
+@using tci.FileFlow.SftpEngine.Core.Services
+@using System.IO
+@inherits LayoutComponentBase
+@inject ILocalStorageService LocalStorage
+@inject IStringLocalizer<MainLayout> Loc
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject IDatabaseService DbService
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
 
-<PageTitle>tci.FileFlow.SftpEngine.Blazor</PageTitle>
+<PageTitle>@(string.IsNullOrWhiteSpace(_clientName) ? "SFTP Engine" : $"{_clientName} - SFTP Engine")</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_myCustomTheme" />
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraExtraLarge" />
+<MudSnackbarProvider />
+<MudPopoverProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+<MudLayout>
+    <MudAppBar Fixed="true">
+        @if (_hasLogo)
+        {
+            <img src="@($"images/client-logo.png?v={_logoCacheBuster}")" alt="Logo" style="height: 40px; margin-right: 15px;" />
+        }
+        <MudText Typo="Typo.h6" Class="ml-3">@(string.IsNullOrWhiteSpace(_clientName) ? "SFTP Engine" : _clientName)</MudText>
 
-        <article class="content px-4">
+        <MudSpacer />
+
+        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.TopRight"
+                 TransformOrigin="Origin.TopRight">
+            <MudMenuItem Icon="@Icons.Material.Filled.Brush" OnClick="@OpenBrandingDialog">
+                @Loc["Branding"]
+            </MudMenuItem>
+            <MudDivider />
+            <MudMenuItem OnClick="@ToggleDarkMode">
+                @(_isDarkMode ? Loc["LightMode"] : Loc["DarkMode"])
+            </MudMenuItem>
+            <MudDivider />
+            <MudMenuItem Disabled="true">@Loc["Language"]</MudMenuItem>
+            <MudMenuItem Disabled="@(_currentCulture == "en")" OnClick="@(() => SelectCulture("en"))">@Loc["English"]
+            </MudMenuItem>
+            <MudMenuItem Disabled="@(_currentCulture == "es")" OnClick="@(() => SelectCulture("es"))">@Loc["Spanish"]
+            </MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _isDarkMode;
+    private string _currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    private string _clientName = string.Empty;
+    private bool _hasLogo;
+    private long _logoCacheBuster;
+
+    protected override void OnInitialized()
+    {
+        RefreshBrandingData();
+    }
+
+    private void RefreshBrandingData()
+    {
+        _clientName = DbService.GetActiveConfig().ClientName;
+        var logoPath = Path.Combine(Env.WebRootPath, "images", "client-logo.png");
+        _hasLogo = File.Exists(logoPath);
+        _logoCacheBuster = DateTime.UtcNow.Ticks;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDarkMode = await LocalStorage.GetItemAsync<bool>("darkMode");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+        await LocalStorage.SetItemAsync("darkMode", _isDarkMode);
+    }
+    
+    private async Task OpenBrandingDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<tci.FileFlow.SftpEngine.Blazor.Components.Pages.Branding>("Branding", options);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            RefreshBrandingData();
+            StateHasChanged();
+        }
+    }
+
+    private void SelectCulture(string culture)
+    {
+        if (culture == _currentCulture)
+            return;
+
+        var uri = new Uri(NavigationManager.Uri).GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+        var query = $"?culture={Uri.EscapeDataString(culture)}&redirectUri={Uri.EscapeDataString(uri)}";
+        NavigationManager.NavigateTo("/Culture/Set" + query, forceLoad: true);
+    }
+
+    private MudTheme _myCustomTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0054a6",
+            Secondary = "#00818a",
+            AppbarBackground = "#0054a6",
+            Surface = "#ffffff",
+            Background = "#f4f7f9",
+            Success = "#2e7d32",
+            PrimaryContrastText = "#ffffff",
+            SuccessContrastText = "#ffffff"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#4db6ac",
+            Secondary = "#80deea",
+            Background = "#121212",
+            Surface = "#1e1e1e",
+            AppbarBackground = "#1a1a1a",
+            DrawerBackground = "#121212",
+            ActionDefault = "#b0bec5",
+            TextPrimary = "#eceff1",
+            Success = "#2e7d32",
+            SuccessContrastText = "#ffffff",
+            PrimaryContrastText = "#121212",
+            InfoContrastText = "#ffffff",
+            WarningContrastText = "#121212"
+        }
+    };
+}

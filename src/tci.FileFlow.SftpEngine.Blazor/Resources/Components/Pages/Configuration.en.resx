@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="DialogTitle" xml:space="preserve"><value>Engine Configuration (Staging)</value></data>
+  <data name="Section1Title" xml:space="preserve"><value>1. SFTP Server Credentials</value></data>
+  <data name="HostLabel" xml:space="preserve"><value>Host / IP</value></data>
+  <data name="PortLabel" xml:space="preserve"><value>Port</value></data>
+  <data name="UserLabel" xml:space="preserve"><value>Username</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Password</value></data>
+  <data name="Section2Title" xml:space="preserve"><value>2. Paths and Frequency</value></data>
+  <data name="LocalPathLabel" xml:space="preserve"><value>Local Path (Host)</value></data>
+  <data name="RemotePathLabel" xml:space="preserve"><value>Remote Directory</value></data>
+  <data name="IntervalLabel" xml:space="preserve"><value>Execution Interval (Minutes)</value></data>
+  <data name="Section3Title" xml:space="preserve"><value>3. Cleaning and Retention Rules</value></data>
+  <data name="DeleteLocalLabel" xml:space="preserve"><value>Delete local file after transfer</value></data>
+  <data name="IgnoreDaysLabel" xml:space="preserve"><value>Ignore files older than (Days)</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancel</value></data>
+  <data name="SaveDraftButton" xml:space="preserve"><value>Save Draft</value></data>
+  <data name="StagingSavedSuccess" xml:space="preserve"><value>Staging configuration saved successfully.</value></data>
+  <data name="FormValidationError" xml:space="preserve"><value>Please correct the errors in the form.</value></data>
+  <data name="ActiveConfigTitle" xml:space="preserve"><value>Active Configuration</value></data>
+  <data name="DraftConfigTitle" xml:space="preserve"><value>Draft Configuration (Staging)</value></data>
+  <data name="ApplyChangesBtn" xml:space="preserve"><value>Deploy to Active</value></data>
+  <data name="DeploymentSuccess" xml:space="preserve"><value>Configuration successfully deployed and applied to the worker.</value></data>
+  <data name="DeploymentFailed" xml:space="preserve"><value>Deployment Failed: Network Diagnostics did not pass.</value></data>
+</root>
