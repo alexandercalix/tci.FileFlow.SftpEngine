@@ -22,4 +22,6 @@
   <data name="ApplyChangesBtn" xml:space="preserve"><value>Aplicar a Producción</value></data>
   <data name="DeploymentSuccess" xml:space="preserve"><value>Configuración desplegada y aplicada al worker exitosamente.</value></data>
   <data name="DeploymentFailed" xml:space="preserve"><value>Despliegue Fallido: El diagnóstico de red no ha pasado.</value></data>
+  <data name="MoveToBackupLabel" xml:space="preserve"><value>Mover a carpeta de respaldo local tras transferir</value></data>
+  <data name="BackupFolderLabel" xml:space="preserve"><value>Carpeta de Respaldo Local</value></data>
 </root>

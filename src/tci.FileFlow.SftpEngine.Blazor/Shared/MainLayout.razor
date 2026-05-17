@@ -68,7 +68,8 @@
     private void RefreshBrandingData()
     {
         _clientName = DbService.GetActiveConfig().ClientName;
-        var logoPath = Path.Combine(Env.WebRootPath, "images", "client-logo.png");
+        var webRoot = Env.WebRootPath ?? Path.Combine(Env.ContentRootPath, "wwwroot");
+        var logoPath = Path.Combine(webRoot, "images", "client-logo.png");
         _hasLogo = File.Exists(logoPath);
         _logoCacheBuster = DateTime.UtcNow.Ticks;
     }

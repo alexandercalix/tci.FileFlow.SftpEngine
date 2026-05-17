@@ -129,7 +129,7 @@ public class FileFlowWorker : BackgroundService
         }
 
         // Connection is healthy, clear previous errors from the UI dashboard
-        _progressState.LastSystemError = null;
+        _progressState.LastSystemError = string.Empty;
 
         // 4. Memory-Safe Scanning using EnumerateFiles
         _progressState.CurrentTaskName = "SCANNING_DIRECTORY";
@@ -211,8 +211,24 @@ public class FileFlowWorker : BackgroundService
                         DiagnosticsMessage = "File successfully transferred and verified."
                     });
 
-                    // Optional cleanup: Delete local file if explicitly enabled by the checkbox configuration
-                    if (config.DeleteLocalAfterTransfer)
+                    // Optional cleanup: Move to backup folder or delete
+                    if (config.MoveToBackupFolder && !string.IsNullOrWhiteSpace(config.BackupFolder))
+                    {
+                        if (!Directory.Exists(config.BackupFolder))
+                        {
+                            Directory.CreateDirectory(config.BackupFolder);
+                        }
+
+                        var backupFilePath = Path.Combine(config.BackupFolder, file.Name);
+                        if (File.Exists(backupFilePath))
+                        {
+                            var extension = Path.GetExtension(file.Name);
+                            var nameWithoutExt = Path.GetFileNameWithoutExtension(file.Name);
+                            backupFilePath = Path.Combine(config.BackupFolder, $"{nameWithoutExt}_{DateTime.Now:yyyyMMddHHmmss}{extension}");
+                        }
+                        File.Move(file.FullName, backupFilePath);
+                    }
+                    else if (config.DeleteLocalAfterTransfer)
                     {
                         File.Delete(file.FullName);
                     }

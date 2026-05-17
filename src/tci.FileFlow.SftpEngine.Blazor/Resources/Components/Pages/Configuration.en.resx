@@ -22,4 +22,6 @@
   <data name="ApplyChangesBtn" xml:space="preserve"><value>Deploy to Active</value></data>
   <data name="DeploymentSuccess" xml:space="preserve"><value>Configuration successfully deployed and applied to the worker.</value></data>
   <data name="DeploymentFailed" xml:space="preserve"><value>Deployment Failed: Network Diagnostics did not pass.</value></data>
+  <data name="MoveToBackupLabel" xml:space="preserve"><value>Move file to backup folder after transfer</value></data>
+  <data name="BackupFolderLabel" xml:space="preserve"><value>Local Backup Folder</value></data>
 </root>

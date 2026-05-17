@@ -21,6 +21,8 @@ public class SftpEngineConfig
 
     // Data Hygiene & Retention Rules
     public bool DeleteLocalAfterTransfer { get; set; }
+    public bool MoveToBackupFolder { get; set; }
+    public string BackupFolder { get; set; } = string.Empty;
     public int DeleteOlderThanDays { get; set; } = 7;
 
     // White-Label / Branding Personalization

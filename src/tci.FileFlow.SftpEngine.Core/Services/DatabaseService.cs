@@ -63,6 +63,8 @@ public class DatabaseService : IDatabaseService
         active.LocalSourceFolder = staging.LocalSourceFolder;
         active.IntervalMinutes = staging.IntervalMinutes;
         active.DeleteLocalAfterTransfer = staging.DeleteLocalAfterTransfer;
+        active.MoveToBackupFolder = staging.MoveToBackupFolder;
+        active.BackupFolder = staging.BackupFolder;
         active.DeleteOlderThanDays = staging.DeleteOlderThanDays;
         active.ClientName = staging.ClientName;
 

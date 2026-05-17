@@ -49,9 +49,9 @@ if ([string]::IsNullOrWhiteSpace($port)) {
 
 # Prompt for AutoStart
 $autoStart = Read-Host "Deseas que el servicio inicie automaticamente con Windows? (S/N) [Por defecto: S]"
-$startType = "auto"
+$startType = "Automatic" # Updated for native PowerShell
 if ($autoStart.ToUpper() -eq "N") {
-    $startType = "demand"
+    $startType = "Manual" # Updated for native PowerShell
 }
 
 Write-Host ""
@@ -79,20 +79,18 @@ if ($existingService) {
     Start-Sleep -Seconds 2
 }
 
-# Build the execution command with arguments
-# The quotes are tricky. We need binPath to be strictly "C:\path\to\exe" --urls=http://*:<port>
+# Build the execution command with arguments (quotes wrap the exe path, arguments stay outside)
 $binPath = "`"$exePath`" --urls=http://*:$port"
 
-# Create the service using sc.exe
+# Create the service using Native PowerShell (New-Service)
 Write-Host "Creando el servicio en Windows..." -ForegroundColor Green
-$createResult = sc.exe create $instanceName binPath= $binPath start= $startType DisplayName= "TCI SFTP Engine ($port)"
-Write-Host $createResult
+New-Service -Name $instanceName -BinaryPathName $binPath -DisplayName "TCI SFTP Engine ($port)" -StartupType $startType | Out-Null
 
-# Set Description
+# Set Description (sc.exe works fine here because it's a simple string pass)
 sc.exe description $instanceName "Motor de transferencia SFTP. Corriendo en el puerto: $port" | Out-Null
 
 # Try to start it
-if ($startType -eq "auto") {
+if ($startType -eq "Automatic") {
     Write-Host "Iniciando el servicio..." -ForegroundColor Green
     Start-Service -Name $instanceName -ErrorAction Continue
     

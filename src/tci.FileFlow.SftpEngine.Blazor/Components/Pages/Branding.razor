@@ -87,7 +87,8 @@
                     return;
                 }
 
-                var imagesFolder = Path.Combine(Env.WebRootPath, "images");
+                var webRoot = Env.WebRootPath ?? Path.Combine(Env.ContentRootPath, "wwwroot");
+                var imagesFolder = Path.Combine(webRoot, "images");
                 Directory.CreateDirectory(imagesFolder);
                 var filePath = Path.Combine(imagesFolder, "client-logo.png");
 
@@ -117,7 +118,7 @@
                             Mode = SixLabors.ImageSharp.Processing.ResizeMode.Pad
                         }));
 
-                        var faviconPath = Path.Combine(Env.WebRootPath, "favicon.png");
+                        var faviconPath = Path.Combine(webRoot, "favicon.png");
                         await image.SaveAsync(faviconPath, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
                         Snackbar.Add(Loc["FaviconGeneratedSuccess"], Severity.Success);
                     }

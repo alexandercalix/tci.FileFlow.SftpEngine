@@ -100,12 +100,21 @@
 
                         <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section3Title"]</MudText>
                         <MudGrid Class="mb-4">
-                            <MudItem xs="12" sm="6">
-                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" />
+                            <MudItem xs="12" sm="4">
+                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" Disabled="@_config.MoveToBackupFolder" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="12" sm="4">
+                                <MudSwitch @bind-Value="_config.MoveToBackupFolder" Color="Color.Primary" Label="@Loc["MoveToBackupLabel"]" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
                                 <MudNumericField @bind-Value="_config.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             </MudItem>
+                            @if (_config.MoveToBackupFolder)
+                            {
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="_config.BackupFolder" Label="@Loc["BackupFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                            }
                         </MudGrid>
                     </MudForm>
                 </MudPaper>
@@ -135,12 +144,31 @@
         _activeConfig = DbService.GetActiveConfig();
     }
 
+    private bool ValidateLocalDirectories()
+    {
+        if (!System.IO.Directory.Exists(_config.LocalSourceFolder))
+        {
+            Snackbar.Add($"Local Directory Error: The folder '{_config.LocalSourceFolder}' does not exist on this machine.", Severity.Warning);
+            return false;
+        }
+
+        if (_config.MoveToBackupFolder && !System.IO.Directory.Exists(_config.BackupFolder))
+        {
+            Snackbar.Add($"Backup Directory Error: The folder '{_config.BackupFolder}' does not exist on this machine.", Severity.Warning);
+            return false;
+        }
+
+        return true;
+    }
+
     private async Task SaveStagingAsync()
     {
         await _form.Validate();
 
         if (_form.IsValid)
         {
+            if (!ValidateLocalDirectories()) return;
+
             _config.IsActive = false;
             DbService.SaveConfig(_config);
 
@@ -162,12 +190,7 @@
             return;
         }
 
-        // Validate local folder exists before applying
-        if (!System.IO.Directory.Exists(_config.LocalSourceFolder))
-        {
-            Snackbar.Add($"Local Directory Error: The folder '{_config.LocalSourceFolder}' does not exist on this machine.", Severity.Warning);
-            return;
-        }
+        if (!ValidateLocalDirectories()) return;
 
         // Auto-save draft before deploying
         _config.IsActive = false;
