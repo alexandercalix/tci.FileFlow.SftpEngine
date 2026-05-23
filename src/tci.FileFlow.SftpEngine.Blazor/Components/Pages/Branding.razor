@@ -12,6 +12,8 @@
 @inject ISnackbar Snackbar
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
 @inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+@implements IDisposable
 
 <MudDialog>
     <TitleContent>
@@ -25,16 +27,16 @@
             <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["ClientNameSection"]</MudText>
             <MudGrid Class="mb-6">
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="_clientName" Label="@Loc["ClientNameLabel"]" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudTextField @bind-Value="_clientName" Label="@Loc["ClientNameLabel"]" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                 </MudItem>
             </MudGrid>
 
             <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["AssetsSection"]</MudText>
             <MudGrid Class="mb-4">
                 <MudItem xs="12">
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadClientLogoAsync" Accept=".png, .jpg, .jpeg">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadClientLogoAsync" Accept=".png, .jpg, .jpeg" Disabled="!AuthService.IsAuthenticated">
                         <ActivatorContent>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" FullWidth="true">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" FullWidth="true" Disabled="!AuthService.IsAuthenticated">
                                 @Loc["UploadLogoButton"]
                             </MudButton>
                         </ActivatorContent>
@@ -45,14 +47,14 @@
                     }
                     <MudText Typo="Typo.caption" Color="Color.Default" Class="d-block mt-2">@Loc["LogoHint"]</MudText>
                     
-                    <MudCheckBox @bind-Value="_generateFavicon" Label="@Loc["GenerateFaviconLabel"]" Color="Color.Primary" Class="mt-2" />
+                    <MudCheckBox @bind-Value="_generateFavicon" Label="@Loc["GenerateFaviconLabel"]" Color="Color.Primary" Class="mt-2" Disabled="!AuthService.IsAuthenticated" />
                 </MudItem>
             </MudGrid>
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@Loc["CancelButton"]</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="SaveBrandingAsync">@Loc["SaveButton"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="SaveBrandingAsync" Disabled="!AuthService.IsAuthenticated">@Loc["SaveButton"]</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -69,9 +71,15 @@
 
     protected override void OnInitialized()
     {
+        AuthService.OnAuthStateChanged += StateHasChanged;
         // Branding updates instantly to active config, but we also sync to staging so it's not overwritten later.
         var activeConfig = DbService.GetActiveConfig();
         _clientName = activeConfig.ClientName;
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
     }
 
     private async Task UploadClientLogoAsync(IBrowserFile file)

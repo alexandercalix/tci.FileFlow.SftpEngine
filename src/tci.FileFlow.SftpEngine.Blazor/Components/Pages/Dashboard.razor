@@ -16,14 +16,6 @@
 <div class="d-flex justify-space-between align-center mb-6">
     <MudText Typo="Typo.h4" Color="Color.Primary">@Loc["Title"]</MudText>
     <div class="d-flex gap-4">
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Settings"
-                   OnClick="OpenConfigDialogAsync">
-            @Loc["ConfigButton"]
-        </MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Info" StartIcon="@Icons.Material.Filled.Analytics"
-                   OnClick="OpenDiagnosticsDialogAsync">
-            @Loc["DiagnosticsButton"]
-        </MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Bolt"
                    OnClick="ForceExecutionAsync">
             @Loc["ExecuteNow"]
@@ -303,19 +295,6 @@
             worker?.ForceExecutionNow();
         }
 
-    }
-
-    private async Task OpenConfigDialogAsync()
-    {
-        // This is how we hook up the Configuracion.razor MudDialog we just built!
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
-        await DialogService.ShowAsync<Configuration>("", options);
-    }
-
-    private async Task OpenDiagnosticsDialogAsync()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        await DialogService.ShowAsync<Diagnostics>("", options);
     }
 
     private Color GetStatusColor(TransferStatus status) => status switch

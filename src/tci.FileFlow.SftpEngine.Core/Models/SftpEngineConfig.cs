@@ -29,4 +29,7 @@ public class SftpEngineConfig
 
     // White-Label / Branding Personalization
     public string ClientName { get; set; } = string.Empty;
+
+    // Authentication
+    public string AdminPassword { get; set; } = "admin";
 }

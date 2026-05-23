@@ -69,6 +69,7 @@ public class DatabaseService : IDatabaseService
         active.EmptyFilesFolder = staging.EmptyFilesFolder;
         active.DeleteOlderThanDays = staging.DeleteOlderThanDays;
         active.ClientName = staging.ClientName;
+        active.AdminPassword = staging.AdminPassword;
 
         col.Upsert(active);
         // We no longer delete the staging record so the draft form remains populated with the active parameters

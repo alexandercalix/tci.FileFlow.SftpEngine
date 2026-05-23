@@ -4,10 +4,11 @@ using tci.FileFlow.SftpEngine.Core.BackgroundServices;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
 
+var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 var options = new WebApplicationOptions
 {
     Args = args,
-    ContentRootPath = AppContext.BaseDirectory
+    ContentRootPath = isDevelopment ? Directory.GetCurrentDirectory() : AppContext.BaseDirectory
 };
 var builder = WebApplication.CreateBuilder(options);
 
@@ -23,10 +24,11 @@ builder.Services.AddBlazoredLocalStorage();
 // --- MULTI-LANGUAGE (LOCALIZATION) SETUP ---
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-// Register our Core Infrastructure Layers (Singletons)
+// Register our Core Infrastructure Layers
 builder.Services.AddSingleton<TransferProgressState>();
 builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
 builder.Services.AddSingleton<ISftpService, SftpService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Register the 24/7 background worker execution thread
 builder.Services.AddHostedService<FileFlowWorker>();

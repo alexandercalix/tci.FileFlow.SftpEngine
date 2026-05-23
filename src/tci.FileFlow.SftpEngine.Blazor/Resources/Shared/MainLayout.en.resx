@@ -6,4 +6,9 @@
   <data name="English" xml:space="preserve"><value>English</value></data>
   <data name="Spanish" xml:space="preserve"><value>Spanish</value></data>
   <data name="Branding" xml:space="preserve"><value>Branding</value></data>
+  <data name="ConfigButton" xml:space="preserve"><value>Configuration</value></data>
+  <data name="DiagnosticsButton" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="Login" xml:space="preserve"><value>Administrator Login</value></data>
+  <data name="Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="ChangePassword" xml:space="preserve"><value>Change Password</value></data>
 </root>

@@ -10,6 +10,7 @@
 @inject IDialogService DialogService
 @inject IDatabaseService DbService
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@inject IAuthService AuthService
 
 <PageTitle>@(string.IsNullOrWhiteSpace(_clientName) ? "SFTP Engine" : $"{_clientName} - SFTP Engine")</PageTitle>
 
@@ -30,6 +31,24 @@
 
         <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.TopRight"
                  TransformOrigin="Origin.TopRight">
+            
+            @if (AuthService.IsAuthenticated)
+            {
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="Logout">@Loc["Logout"]</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Key" OnClick="OpenChangePasswordDialog">@Loc["ChangePassword"]</MudMenuItem>
+            }
+            else
+            {
+                <MudMenuItem Icon="@Icons.Material.Filled.Login" OnClick="OpenLoginDialog">@Loc["Login"]</MudMenuItem>
+            }
+            <MudDivider />
+
+            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnClick="OpenConfigDialogAsync">
+                @Loc["ConfigButton"]
+            </MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Analytics" OnClick="OpenDiagnosticsDialogAsync">
+                @Loc["DiagnosticsButton"]
+            </MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Brush" OnClick="@OpenBrandingDialog">
                 @Loc["Branding"]
             </MudMenuItem>
@@ -62,7 +81,13 @@
 
     protected override void OnInitialized()
     {
+        AuthService.OnAuthStateChanged += StateHasChanged;
         RefreshBrandingData();
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
     }
 
     private void RefreshBrandingData()
@@ -100,6 +125,35 @@
             RefreshBrandingData();
             StateHasChanged();
         }
+    }
+
+    private async Task OpenLoginDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        await DialogService.ShowAsync<tci.FileFlow.SftpEngine.Blazor.Components.Shared.LoginModal>("Login", options);
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+    }
+
+    private async Task OpenChangePasswordDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        await DialogService.ShowAsync<tci.FileFlow.SftpEngine.Blazor.Components.Shared.ChangePasswordModal>("Change Password", options);
+    }
+
+    private async Task OpenConfigDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        await DialogService.ShowAsync<tci.FileFlow.SftpEngine.Blazor.Components.Pages.Configuration>("Configuration", options);
+    }
+
+    private async Task OpenDiagnosticsDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        await DialogService.ShowAsync<tci.FileFlow.SftpEngine.Blazor.Components.Pages.Diagnostics>("Diagnostics", options);
     }
 
     private void SelectCulture(string culture)

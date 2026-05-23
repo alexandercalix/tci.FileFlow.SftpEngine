@@ -6,4 +6,9 @@
   <data name="English" xml:space="preserve"><value>Inglés</value></data>
   <data name="Spanish" xml:space="preserve"><value>Español</value></data>
   <data name="Branding" xml:space="preserve"><value>Personalización</value></data>
+  <data name="ConfigButton" xml:space="preserve"><value>Configuración</value></data>
+  <data name="DiagnosticsButton" xml:space="preserve"><value>Diagnósticos</value></data>
+  <data name="Login" xml:space="preserve"><value>Login Administrador</value></data>
+  <data name="Logout" xml:space="preserve"><value>Cerrar Sesión</value></data>
+  <data name="ChangePassword" xml:space="preserve"><value>Cambiar Contraseña</value></data>
 </root>

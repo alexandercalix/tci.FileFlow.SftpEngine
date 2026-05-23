@@ -9,6 +9,8 @@
 @inject ISftpService SftpService
 @inject ISnackbar Snackbar
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@inject IAuthService AuthService
+@implements IDisposable
 
 <MudDialog>
     <TitleContent>
@@ -93,60 +95,60 @@
                         <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section1Title"]</MudText>
                         <MudGrid Class="mb-4">
                             <MudItem xs="12" sm="8">
-                                <MudTextField @bind-Value="_config.Host" Label="@Loc["HostLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField @bind-Value="_config.Host" Label="@Loc["HostLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             <MudItem xs="12" sm="4">
-                                <MudNumericField @bind-Value="_config.Port" Label="@Loc["PortLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="_config.Port" Label="@Loc["PortLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="_config.Username" Label="@Loc["UserLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField @bind-Value="_config.Username" Label="@Loc["UserLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="_config.Password" Label="@Loc["PasswordLabel"]" InputType="InputType.Password" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField @bind-Value="_config.Password" Label="@Loc["PasswordLabel"]" InputType="InputType.Password" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                         </MudGrid>
 
                         <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section2Title"]</MudText>
                         <MudGrid Class="mb-4">
                             <MudItem xs="12">
-                                <MudTextField @bind-Value="_config.LocalSourceFolder" Label="@Loc["LocalPathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField @bind-Value="_config.LocalSourceFolder" Label="@Loc["LocalPathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             
                             <MudItem xs="12">
-                                <MudSwitch @bind-Value="_config.MoveToBackupFolder" Color="Color.Primary" Label="@Loc["MoveToBackupLabel"]" />
+                                <MudSwitch @bind-Value="_config.MoveToBackupFolder" Color="Color.Primary" Label="@Loc["MoveToBackupLabel"]" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             @if (_config.MoveToBackupFolder)
                             {
                                 <MudItem xs="12" Class="pt-0">
-                                    <MudTextField @bind-Value="_config.BackupFolder" Label="@Loc["BackupFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    <MudTextField @bind-Value="_config.BackupFolder" Label="@Loc["BackupFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                                 </MudItem>
                             }
 
                             <MudItem xs="12">
-                                <MudSwitch @bind-Value="_config.MoveEmptyFiles" Color="Color.Warning" Label="@Loc["MoveEmptyFilesLabel"]" />
+                                <MudSwitch @bind-Value="_config.MoveEmptyFiles" Color="Color.Warning" Label="@Loc["MoveEmptyFilesLabel"]" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             @if (_config.MoveEmptyFiles)
                             {
                                 <MudItem xs="12" Class="pt-0">
-                                    <MudTextField @bind-Value="_config.EmptyFilesFolder" Label="@Loc["EmptyFilesFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    <MudTextField @bind-Value="_config.EmptyFilesFolder" Label="@Loc["EmptyFilesFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                                 </MudItem>
                             }
 
                             <MudItem xs="12">
-                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" Disabled="@_config.MoveToBackupFolder" />
+                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" Disabled="@(!AuthService.IsAuthenticated || _config.MoveToBackupFolder)" />
                             </MudItem>
                         </MudGrid>
 
                         <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section3Title"]</MudText>
                         <MudGrid Class="mb-4">
                             <MudItem xs="12">
-                                <MudTextField @bind-Value="_config.RemoteFolder" Label="@Loc["RemotePathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField @bind-Value="_config.RemoteFolder" Label="@Loc["RemotePathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudNumericField @bind-Value="_config.IntervalMinutes" Label="@Loc["IntervalLabel"]" Required="true" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="_config.IntervalMinutes" Label="@Loc["IntervalLabel"]" Required="true" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
-                                <MudNumericField @bind-Value="_config.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudNumericField @bind-Value="_config.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" Disabled="!AuthService.IsAuthenticated" />
                             </MudItem>
                         </MudGrid>
                     </MudForm>
@@ -156,8 +158,8 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@Loc["CancelButton"]</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="SaveStagingAsync">@Loc["SaveDraftButton"]</MudButton>
-        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Publish" OnClick="DeployStagingToActiveAsync">@Loc["ApplyChangesBtn"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="SaveStagingAsync" Disabled="!AuthService.IsAuthenticated">@Loc["SaveDraftButton"]</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Publish" OnClick="DeployStagingToActiveAsync" Disabled="!AuthService.IsAuthenticated">@Loc["ApplyChangesBtn"]</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -173,8 +175,14 @@
 
     protected override void OnInitialized()
     {
+        AuthService.OnAuthStateChanged += StateHasChanged;
         _config = DbService.GetStagingConfig();
         _activeConfig = DbService.GetActiveConfig();
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
     }
 
     private bool HasReadWriteAccess(string folderPath)

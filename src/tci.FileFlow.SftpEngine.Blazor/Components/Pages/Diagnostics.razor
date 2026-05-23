@@ -1,8 +1,11 @@
+@using tci.FileFlow.SftpEngine.Core.Services
 @inject IStringLocalizer<Diagnostics> Loc
 @inject IDatabaseService DbService
 @inject ISftpService SftpService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IAuthService AuthService
+@implements IDisposable
 
 <MudDialog>
     <TitleContent>
@@ -31,7 +34,8 @@
                         </MudText>
                         <MudText Typo="Typo.body2" Class="mb-3" Color="Color.Secondary">@Loc["ResetHistoryDesc"]</MudText>
                         <MudButton Variant="Variant.Outlined" Color="Color.Error"
-                                   StartIcon="@Icons.Material.Filled.DeleteForever" OnClick="ResetTransferHistoryAsync">
+                                   StartIcon="@Icons.Material.Filled.DeleteForever" OnClick="ResetTransferHistoryAsync"
+                                   Disabled="!AuthService.IsAuthenticated">
                             @Loc["ResetHistoryBtn"]
                         </MudButton>
                     </MudPaper>
@@ -48,6 +52,16 @@
     private IMudDialogInstance MudDialog { get; set; }
 
     private bool _isTesting;
+
+    protected override void OnInitialized()
+    {
+        AuthService.OnAuthStateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
+    }
 
     private async Task RunNetworkDiagnosticsAsync()
     {
