@@ -41,21 +41,42 @@
 
                     <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section2Title"]</MudText>
                     <MudGrid Class="mb-4">
-                        <MudItem xs="12" sm="6">
+                        <MudItem xs="12">
                             <MudTextField @bind-Value="_activeConfig.LocalSourceFolder" Label="@Loc["LocalPathLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
                         </MudItem>
-                        <MudItem xs="12" sm="6">
-                            <MudTextField @bind-Value="_activeConfig.RemoteFolder" Label="@Loc["RemotePathLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
-                        </MudItem>
+                        
                         <MudItem xs="12">
-                            <MudNumericField @bind-Value="_activeConfig.IntervalMinutes" Label="@Loc["IntervalLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                            <MudSwitch @bind-Value="_activeConfig.MoveToBackupFolder" Color="Color.Primary" Label="@Loc["MoveToBackupLabel"]" ReadOnly="true" />
+                        </MudItem>
+                        @if (_activeConfig.MoveToBackupFolder)
+                        {
+                            <MudItem xs="12" Class="pt-0">
+                                <MudTextField @bind-Value="_activeConfig.BackupFolder" Label="@Loc["BackupFolderLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                            </MudItem>
+                        }
+
+                        <MudItem xs="12">
+                            <MudSwitch @bind-Value="_activeConfig.MoveEmptyFiles" Color="Color.Warning" Label="@Loc["MoveEmptyFilesLabel"]" ReadOnly="true" />
+                        </MudItem>
+                        @if (_activeConfig.MoveEmptyFiles)
+                        {
+                            <MudItem xs="12" Class="pt-0">
+                                <MudTextField @bind-Value="_activeConfig.EmptyFilesFolder" Label="@Loc["EmptyFilesFolderLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                            </MudItem>
+                        }
+
+                        <MudItem xs="12">
+                            <MudSwitch @bind-Value="_activeConfig.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" ReadOnly="true" />
                         </MudItem>
                     </MudGrid>
 
                     <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section3Title"]</MudText>
                     <MudGrid Class="mb-4">
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_activeConfig.RemoteFolder" Label="@Loc["RemotePathLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
+                        </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudSwitch @bind-Value="_activeConfig.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" ReadOnly="true" />
+                            <MudNumericField @bind-Value="_activeConfig.IntervalMinutes" Label="@Loc["IntervalLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudNumericField @bind-Value="_activeConfig.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" ReadOnly="true" Variant="Variant.Filled" Margin="Margin.Dense" />
@@ -87,34 +108,46 @@
 
                         <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section2Title"]</MudText>
                         <MudGrid Class="mb-4">
-                            <MudItem xs="12" sm="6">
+                            <MudItem xs="12">
                                 <MudTextField @bind-Value="_config.LocalSourceFolder" Label="@Loc["LocalPathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudTextField @bind-Value="_config.RemoteFolder" Label="@Loc["RemotePathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                            </MudItem>
+                            
                             <MudItem xs="12">
-                                <MudNumericField @bind-Value="_config.IntervalMinutes" Label="@Loc["IntervalLabel"]" Required="true" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudSwitch @bind-Value="_config.MoveToBackupFolder" Color="Color.Primary" Label="@Loc["MoveToBackupLabel"]" />
+                            </MudItem>
+                            @if (_config.MoveToBackupFolder)
+                            {
+                                <MudItem xs="12" Class="pt-0">
+                                    <MudTextField @bind-Value="_config.BackupFolder" Label="@Loc["BackupFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                            }
+
+                            <MudItem xs="12">
+                                <MudSwitch @bind-Value="_config.MoveEmptyFiles" Color="Color.Warning" Label="@Loc["MoveEmptyFilesLabel"]" />
+                            </MudItem>
+                            @if (_config.MoveEmptyFiles)
+                            {
+                                <MudItem xs="12" Class="pt-0">
+                                    <MudTextField @bind-Value="_config.EmptyFilesFolder" Label="@Loc["EmptyFilesFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                </MudItem>
+                            }
+
+                            <MudItem xs="12">
+                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" Disabled="@_config.MoveToBackupFolder" />
                             </MudItem>
                         </MudGrid>
 
                         <MudText Typo="Typo.subtitle2" Class="mb-2">@Loc["Section3Title"]</MudText>
                         <MudGrid Class="mb-4">
-                            <MudItem xs="12" sm="4">
-                                <MudSwitch @bind-Value="_config.DeleteLocalAfterTransfer" Color="Color.Error" Label="@Loc["DeleteLocalLabel"]" Disabled="@_config.MoveToBackupFolder" />
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="_config.RemoteFolder" Label="@Loc["RemotePathLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <MudSwitch @bind-Value="_config.MoveToBackupFolder" Color="Color.Primary" Label="@Loc["MoveToBackupLabel"]" />
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="_config.IntervalMinutes" Label="@Loc["IntervalLabel"]" Required="true" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             </MudItem>
-                            <MudItem xs="12" sm="4">
+                            <MudItem xs="12" sm="6">
                                 <MudNumericField @bind-Value="_config.DeleteOlderThanDays" Label="@Loc["IgnoreDaysLabel"]" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             </MudItem>
-                            @if (_config.MoveToBackupFolder)
-                            {
-                                <MudItem xs="12">
-                                    <MudTextField @bind-Value="_config.BackupFolder" Label="@Loc["BackupFolderLabel"]" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                                </MudItem>
-                            }
                         </MudGrid>
                     </MudForm>
                 </MudPaper>
@@ -144,6 +177,26 @@
         _activeConfig = DbService.GetActiveConfig();
     }
 
+    private bool HasReadWriteAccess(string folderPath)
+    {
+        try
+        {
+            // Test read access
+            var testRead = System.IO.Directory.GetFiles(folderPath, "*", System.IO.SearchOption.TopDirectoryOnly);
+
+            // Test write access
+            string tempFile = System.IO.Path.Combine(folderPath, System.IO.Path.GetRandomFileName());
+            System.IO.File.WriteAllText(tempFile, "test");
+            System.IO.File.Delete(tempFile);
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private bool ValidateLocalDirectories()
     {
         if (!System.IO.Directory.Exists(_config.LocalSourceFolder))
@@ -151,11 +204,38 @@
             Snackbar.Add($"Local Directory Error: The folder '{_config.LocalSourceFolder}' does not exist on this machine.", Severity.Warning);
             return false;
         }
-
-        if (_config.MoveToBackupFolder && !System.IO.Directory.Exists(_config.BackupFolder))
+        if (!HasReadWriteAccess(_config.LocalSourceFolder))
         {
-            Snackbar.Add($"Backup Directory Error: The folder '{_config.BackupFolder}' does not exist on this machine.", Severity.Warning);
+            Snackbar.Add($"Local Directory Permission Error: The engine does not have Read/Write access to '{_config.LocalSourceFolder}'.", Severity.Error);
             return false;
+        }
+
+        if (_config.MoveToBackupFolder)
+        {
+            if (!System.IO.Directory.Exists(_config.BackupFolder))
+            {
+                Snackbar.Add($"Backup Directory Error: The folder '{_config.BackupFolder}' does not exist on this machine.", Severity.Warning);
+                return false;
+            }
+            if (!HasReadWriteAccess(_config.BackupFolder))
+            {
+                Snackbar.Add($"Backup Directory Permission Error: The engine does not have Read/Write access to '{_config.BackupFolder}'.", Severity.Error);
+                return false;
+            }
+        }
+
+        if (_config.MoveEmptyFiles)
+        {
+            if (!System.IO.Directory.Exists(_config.EmptyFilesFolder))
+            {
+                Snackbar.Add($"Empty Files Directory Error: The folder '{_config.EmptyFilesFolder}' does not exist on this machine.", Severity.Warning);
+                return false;
+            }
+            if (!HasReadWriteAccess(_config.EmptyFilesFolder))
+            {
+                Snackbar.Add($"Empty Files Directory Permission Error: The engine does not have Read/Write access to '{_config.EmptyFilesFolder}'.", Severity.Error);
+                return false;
+            }
         }
 
         return true;

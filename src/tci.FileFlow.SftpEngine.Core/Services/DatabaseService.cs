@@ -65,11 +65,13 @@ public class DatabaseService : IDatabaseService
         active.DeleteLocalAfterTransfer = staging.DeleteLocalAfterTransfer;
         active.MoveToBackupFolder = staging.MoveToBackupFolder;
         active.BackupFolder = staging.BackupFolder;
+        active.MoveEmptyFiles = staging.MoveEmptyFiles;
+        active.EmptyFilesFolder = staging.EmptyFilesFolder;
         active.DeleteOlderThanDays = staging.DeleteOlderThanDays;
         active.ClientName = staging.ClientName;
 
         col.Upsert(active);
-        col.Delete(staging.Id);
+        // We no longer delete the staging record so the draft form remains populated with the active parameters
     }
 
     public bool IsFileAlreadyProcessed(string fileName)

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <data name="DialogTitle" xml:space="preserve"><value>Engine Configuration (Staging)</value></data>
-  <data name="Section1Title" xml:space="preserve"><value>1. SFTP Server Credentials</value></data>
+  <data name="Section1Title" xml:space="preserve"><value>1. SFTP Credentials</value></data>
   <data name="HostLabel" xml:space="preserve"><value>Host / IP</value></data>
   <data name="PortLabel" xml:space="preserve"><value>Port</value></data>
   <data name="UserLabel" xml:space="preserve"><value>Username</value></data>
   <data name="PasswordLabel" xml:space="preserve"><value>Password</value></data>
-  <data name="Section2Title" xml:space="preserve"><value>2. Paths and Frequency</value></data>
+  <data name="Section2Title" xml:space="preserve"><value>2. Local Routes &amp; Hygiene</value></data>
   <data name="LocalPathLabel" xml:space="preserve"><value>Local Path (Host)</value></data>
   <data name="RemotePathLabel" xml:space="preserve"><value>Remote Directory</value></data>
   <data name="IntervalLabel" xml:space="preserve"><value>Execution Interval (Minutes)</value></data>
-  <data name="Section3Title" xml:space="preserve"><value>3. Cleaning and Retention Rules</value></data>
+  <data name="Section3Title" xml:space="preserve"><value>3. Engine Settings &amp; Remote</value></data>
   <data name="DeleteLocalLabel" xml:space="preserve"><value>Delete local file after transfer</value></data>
   <data name="IgnoreDaysLabel" xml:space="preserve"><value>Ignore files older than (Days)</value></data>
   <data name="CancelButton" xml:space="preserve"><value>Cancel</value></data>
@@ -24,4 +24,6 @@
   <data name="DeploymentFailed" xml:space="preserve"><value>Deployment Failed: Network Diagnostics did not pass.</value></data>
   <data name="MoveToBackupLabel" xml:space="preserve"><value>Move file to backup folder after transfer</value></data>
   <data name="BackupFolderLabel" xml:space="preserve"><value>Local Backup Folder</value></data>
+  <data name="MoveEmptyFilesLabel" xml:space="preserve"><value>Move empty files (0 bytes) to another folder</value></data>
+  <data name="EmptyFilesFolderLabel" xml:space="preserve"><value>Empty Files Destination Folder</value></data>
 </root>

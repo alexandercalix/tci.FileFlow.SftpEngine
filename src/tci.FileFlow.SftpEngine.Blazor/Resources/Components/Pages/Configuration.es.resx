@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <data name="DialogTitle" xml:space="preserve"><value>Configuración del Motor (Staging)</value></data>
-  <data name="Section1Title" xml:space="preserve"><value>1. Credenciales del Servidor SFTP</value></data>
+  <data name="Section1Title" xml:space="preserve"><value>1. Credenciales SFTP</value></data>
   <data name="HostLabel" xml:space="preserve"><value>Host / IP</value></data>
   <data name="PortLabel" xml:space="preserve"><value>Puerto</value></data>
   <data name="UserLabel" xml:space="preserve"><value>Usuario</value></data>
   <data name="PasswordLabel" xml:space="preserve"><value>Contraseña</value></data>
-  <data name="Section2Title" xml:space="preserve"><value>2. Rutas y Frecuencia</value></data>
+  <data name="Section2Title" xml:space="preserve"><value>2. Rutas Locales y Limpieza</value></data>
   <data name="LocalPathLabel" xml:space="preserve"><value>Ruta Local (Host)</value></data>
   <data name="RemotePathLabel" xml:space="preserve"><value>Directorio Remoto</value></data>
   <data name="IntervalLabel" xml:space="preserve"><value>Intervalo de Ejecución (Minutos)</value></data>
-  <data name="Section3Title" xml:space="preserve"><value>3. Reglas de Limpieza y Retención</value></data>
+  <data name="Section3Title" xml:space="preserve"><value>3. Configuración del Motor y Remoto</value></data>
   <data name="DeleteLocalLabel" xml:space="preserve"><value>Eliminar archivo local tras transferir</value></data>
   <data name="IgnoreDaysLabel" xml:space="preserve"><value>Ignorar archivos con más de (Días)</value></data>
   <data name="CancelButton" xml:space="preserve"><value>Cancelar</value></data>
@@ -24,4 +24,6 @@
   <data name="DeploymentFailed" xml:space="preserve"><value>Despliegue Fallido: El diagnóstico de red no ha pasado.</value></data>
   <data name="MoveToBackupLabel" xml:space="preserve"><value>Mover a carpeta de respaldo local tras transferir</value></data>
   <data name="BackupFolderLabel" xml:space="preserve"><value>Carpeta de Respaldo Local</value></data>
+  <data name="MoveEmptyFilesLabel" xml:space="preserve"><value>Mover archivos vacíos (0 bytes) a otra carpeta</value></data>
+  <data name="EmptyFilesFolderLabel" xml:space="preserve"><value>Carpeta Destino de Archivos Vacíos</value></data>
 </root>

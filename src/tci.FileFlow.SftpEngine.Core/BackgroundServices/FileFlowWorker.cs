@@ -147,7 +147,35 @@ public class FileFlowWorker : BackgroundService
                 // Filter 2: Handle empty files immediately by logging and skipping
                 if (fileInfo.Length == 0)
                 {
-                    if (!_databaseService.IsFileAlreadyProcessed(fileInfo.Name))
+                    bool isAlreadyProcessed = _databaseService.IsFileAlreadyProcessed(fileInfo.Name);
+                    string diagMessage = "Skipped processing: File is completely empty (0 bytes).";
+
+                    if (config.MoveEmptyFiles && !string.IsNullOrWhiteSpace(config.EmptyFilesFolder))
+                    {
+                        try
+                        {
+                            if (!Directory.Exists(config.EmptyFilesFolder))
+                            {
+                                Directory.CreateDirectory(config.EmptyFilesFolder);
+                            }
+
+                            var emptyFilePath = Path.Combine(config.EmptyFilesFolder, fileInfo.Name);
+                            if (File.Exists(emptyFilePath))
+                            {
+                                var extension = Path.GetExtension(fileInfo.Name);
+                                var nameWithoutExt = Path.GetFileNameWithoutExtension(fileInfo.Name);
+                                emptyFilePath = Path.Combine(config.EmptyFilesFolder, $"{nameWithoutExt}_{DateTime.Now:yyyyMMddHHmmss}{extension}");
+                            }
+                            File.Move(fileInfo.FullName, emptyFilePath);
+                            diagMessage += " Moved to empty files folder.";
+                        }
+                        catch (Exception ex)
+                        {
+                            diagMessage += $" Failed to move: {ex.Message}";
+                        }
+                    }
+
+                    if (!isAlreadyProcessed)
                     {
                         _databaseService.LogTransfer(new TransferLog
                         {
@@ -156,7 +184,7 @@ public class FileFlowWorker : BackgroundService
                             FileCreatedAt = fileInfo.CreationTimeUtc,
                             ProcessedAt = DateTime.UtcNow,
                             Status = TransferStatus.IgnoredEmpty,
-                            DiagnosticsMessage = "Skipped processing: File is completely empty (0 bytes)."
+                            DiagnosticsMessage = diagMessage
                         });
                     }
                     return false;
